@@ -49,15 +49,13 @@ export async function validateBearerToken(
     throw new AuthError(401, "Empty Bearer token.");
   }
 
-  // TODO: validate token against Featuriq API once /v1/me is implemented
-  // const response = await fetch(`${featuriqBaseUrl}/me`, {
-  //   headers: { Authorization: `Bearer ${token}` },
-  // });
-  // if (!response.ok) {
-  //   throw new AuthError(401, "Invalid or expired Featuriq API key.");
-  // }
+  const response = await fetch(`${featuriqBaseUrl}/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
-  void featuriqBaseUrl; // remove once the fetch above is wired up
+  if (!response.ok) {
+    throw new AuthError(401, "Invalid or expired Featuriq API key.");
+  }
 
   return { token };
 }

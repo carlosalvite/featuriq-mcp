@@ -196,106 +196,80 @@ export class FeaturiqClient {
 
   /** Returns the top feature requests sorted by votes or revenue impact. */
   async getTopRequests(params: GetTopRequestsParams): Promise<FeatureRequest[]> {
-    // TODO: implement
-    // return this.request<FeatureRequest[]>(
-    //   "GET",
-    //   `/features?sort_by=${params.sort_by ?? "votes"}&limit=${params.limit ?? 10}`
-    // );
-    void params;
-    throw new Error("Not implemented");
+    return this.request<FeatureRequest[]>(
+      "GET",
+      `/features?sort_by=${params.sort_by ?? "votes"}&limit=${params.limit ?? 10}`
+    );
   }
 
   /** Semantic search across all feedback posts. */
   async searchFeedback(params: SearchFeedbackParams): Promise<FeedbackPost[]> {
-    // TODO: implement
-    // return this.request<FeedbackPost[]>(
-    //   "GET",
-    //   `/feedback/search?q=${encodeURIComponent(params.query)}&limit=${params.limit ?? 10}`
-    // );
-    void params;
-    throw new Error("Not implemented");
+    return this.request<FeedbackPost[]>(
+      "GET",
+      `/feedback/search?q=${encodeURIComponent(params.query)}&limit=${params.limit ?? 10}`
+    );
   }
 
   /** Returns all feedback and comments for a specific feature request. */
   async getFeatureFeedback(
     params: GetFeatureFeedbackParams
   ): Promise<{ feature: FeatureRequest; comments: FeatureComment[] }> {
-    // TODO: implement
-    // return this.request<{ feature: FeatureRequest; comments: FeatureComment[] }>(
-    //   "GET",
-    //   `/features/${params.feature_id}/feedback`
-    // );
-    void params;
-    throw new Error("Not implemented");
+    return this.request<{ feature: FeatureRequest; comments: FeatureComment[] }>(
+      "GET",
+      `/features/${params.feature_id}/feedback`
+    );
   }
 
   /** Returns an AI-prioritized list of features scored by selected factors. */
   async getPrioritization(
     params: GetPrioritizationParams
   ): Promise<PrioritizedFeature[]> {
-    // TODO: implement
-    // return this.request<PrioritizedFeature[]>("POST", "/features/prioritize", {
-    //   factors: params.factors,
-    //   limit: params.limit ?? 10,
-    // });
-    void params;
-    throw new Error("Not implemented");
+    return this.request<PrioritizedFeature[]>("POST", "/features/prioritize", {
+      factors: params.factors,
+      limit: params.limit ?? 10,
+    });
   }
 
   /** Updates the status of a feature request. */
   async updateFeatureStatus(
     params: UpdateFeatureStatusParams
   ): Promise<FeatureRequest> {
-    // TODO: implement
-    // return this.request<FeatureRequest>(
-    //   "PATCH",
-    //   `/features/${params.feature_id}`,
-    //   { status: params.status }
-    // );
-    void params;
-    throw new Error("Not implemented");
+    return this.request<FeatureRequest>(
+      "PATCH",
+      `/features/${params.feature_id}`,
+      { status: params.status }
+    );
   }
 
   /** Sends a personalized notification to everyone who requested a feature. */
   async notifyRequesters(params: NotifyRequestersParams): Promise<NotifyResult> {
-    // TODO: implement
-    // return this.request<NotifyResult>(
-    //   "POST",
-    //   `/features/${params.feature_id}/notify`,
-    //   { message: params.message }
-    // );
-    void params;
-    throw new Error("Not implemented");
+    return this.request<NotifyResult>(
+      "POST",
+      `/features/${params.feature_id}/notify`,
+      { message: params.message }
+    );
   }
 
   /** Creates a new feedback post on a board. */
   async createPost(params: CreatePostParams): Promise<FeedbackPost> {
-    // TODO: implement
-    // return this.request<FeedbackPost>("POST", `/boards/${params.board_id}/posts`, {
-    //   title: params.title,
-    //   description: params.description,
-    // });
-    void params;
-    throw new Error("Not implemented");
+    return this.request<FeedbackPost>("POST", `/boards/${params.board_id}/posts`, {
+      title: params.title,
+      description: params.description,
+    });
   }
 
   // ---- Resources -----------------------------------------------------------
 
   /** Returns the current roadmap grouped by status. */
   async getRoadmap(): Promise<RoadmapGroup> {
-    // TODO: implement
-    // return this.request<RoadmapGroup>("GET", "/roadmap");
-    throw new Error("Not implemented");
+    return this.request<RoadmapGroup>("GET", "/roadmap");
   }
 
   /** Returns the N most recently shipped features with release notes. */
   async getChangelog(params: GetChangelogParams): Promise<ChangelogEntry[]> {
-    // TODO: implement
-    // return this.request<ChangelogEntry[]>(
-    //   "GET",
-    //   `/changelog?limit=${params.limit ?? 20}`
-    // );
-    void params;
-    throw new Error("Not implemented");
+    return this.request<ChangelogEntry[]>(
+      "GET",
+      `/changelog?limit=${params.limit ?? 20}`
+    );
   }
 }
