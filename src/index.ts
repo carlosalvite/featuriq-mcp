@@ -155,9 +155,10 @@ async function handleMcpRequest(req: any, res: any) {
       return;
     }
     const message = err instanceof Error ? err.message : String(err);
-    process.stderr.write(`[featuriq-mcp] request error: ${message}\n`);
+    const stack = err instanceof Error ? err.stack : "";
+    process.stderr.write(`[featuriq-mcp] request error: ${message}\n${stack}\n`);
     if (!res.headersSent) {
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error", detail: message });
     }
   }
 }
