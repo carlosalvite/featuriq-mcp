@@ -14,6 +14,7 @@ import * as getPrioritization from "./tools/get-prioritization.js";
 import * as updateFeatureStatus from "./tools/update-feature-status.js";
 import * as notifyRequesters from "./tools/notify-requesters.js";
 import * as createPost from "./tools/create-post.js";
+import * as manageFeatureTags from "./tools/manage-feature-tags.js";
 
 import * as roadmap from "./resources/roadmap.js";
 import * as changelog from "./resources/changelog.js";
@@ -101,6 +102,16 @@ export function createMcpServer(client: FeaturiqClient): McpServer {
     createPost.inputSchema.shape,
     async (input) => {
       const text = await createPost.execute(input as createPost.Input, client);
+      return { content: [{ type: "text", text }] };
+    }
+  );
+
+  server.tool(
+    manageFeatureTags.name,
+    manageFeatureTags.description,
+    manageFeatureTags.inputSchema.shape,
+    async (input) => {
+      const text = await manageFeatureTags.execute(input as manageFeatureTags.Input, client);
       return { content: [{ type: "text", text }] };
     }
   );
