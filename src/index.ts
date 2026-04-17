@@ -57,11 +57,11 @@ app.get("/health", (_req, res) => {
 
 app.get("/.well-known/mcp/server-card.json", (_req, res) => {
   res.json({
-    name: "featuriq-mcp",
-    version: "0.1.0",
-    description:
-      "Connect your AI to real user feedback. Query feature requests, search customer feedback, prioritize your backlog, update roadmap status, and notify voters — from Claude, Cursor, or any MCP-compatible client.",
-    endpoint: `${process.env.MCP_PUBLIC_URL ?? "https://mcp.featuriq.io"}/mcp`,
+    serverInfo: { name: "featuriq-mcp", version: "0.1.0" },
+    authentication: {
+      required: true,
+      schemes: ["oauth2"],
+    },
     tools: [
       { name: "get_top_requests",       description: "Returns the top feature requests sorted by vote count or revenue impact." },
       { name: "search_feedback",        description: "Semantically searches all feedback posts using natural language." },
@@ -72,6 +72,8 @@ app.get("/.well-known/mcp/server-card.json", (_req, res) => {
       { name: "create_post",            description: "Creates a new feedback post on a Featuriq board." },
       { name: "manage_feature_tags",    description: "Lists workspace tags or assigns tags to a feature request." },
     ],
+    resources: [],
+    prompts: [],
   });
 });
 
