@@ -125,7 +125,7 @@ async function handleMcpRequest(req: any, res: any) {
       res.status(500).json({ error: "Internal server error" });
     }
   }
-});
+}
 
 app.post("/mcp", handleMcpRequest);
 app.post("/", handleMcpRequest);
