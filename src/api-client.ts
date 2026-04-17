@@ -35,6 +35,12 @@ export function getConfig(): FeaturiqClientConfig {
 
 export type FeatureStatus = "planned" | "in_progress" | "shipped" | "closed";
 
+export interface Tag {
+  id: string;
+  name: string;
+  color: string;
+}
+
 export interface FeatureRequest {
   id: string;
   title: string;
@@ -42,6 +48,7 @@ export interface FeatureRequest {
   status: FeatureStatus;
   vote_count: number;
   revenue_impact: number | null; // USD, null if not available
+  tags: Tag[];
   created_at: string; // ISO 8601
   updated_at: string;
   board_id: string;
@@ -73,6 +80,7 @@ export interface FeatureComment {
   };
   created_at: string;
   is_internal: boolean;
+  is_ai_question: boolean;
 }
 
 export interface PrioritizedFeature {
@@ -121,6 +129,14 @@ export interface SearchFeedbackParams {
 
 export interface GetFeatureFeedbackParams {
   feature_id: string;
+  include_internal?: boolean;
+}
+
+export interface GetTagsParams {}
+
+export interface SetFeatureTagsParams {
+  feature_id: string;
+  tag_ids: string[];
 }
 
 export type PrioritizationFactor = "votes" | "revenue" | "effort" | "strategic_fit";
@@ -167,7 +183,7 @@ export class FeaturiqClient {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private async request<T>(
-    method: "GET" | "POST" | "PATCH" | "DELETE",
+    method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE",
     path: string,
     body?: unknown
   ): Promise<T> {
@@ -214,9 +230,24 @@ export class FeaturiqClient {
   async getFeatureFeedback(
     params: GetFeatureFeedbackParams
   ): Promise<{ feature: FeatureRequest; comments: FeatureComment[] }> {
+    const qs = params.include_internal ? "?include_internal=true" : "";
     return this.request<{ feature: FeatureRequest; comments: FeatureComment[] }>(
       "GET",
-      `/features/${params.feature_id}/feedback`
+      `/features/${params.feature_id}/feedback${qs}`
+    );
+  }
+
+  /** Returns all workspace tags. */
+  async getTags(_params?: GetTagsParams): Promise<Tag[]> {
+    return this.request<Tag[]>("GET", "/tags");
+  }
+
+  /** Replaces the tags assigned to a feature (pass an empty array to clear). */
+  async setFeatureTags(params: SetFeatureTagsParams): Promise<Tag[]> {
+    return this.request<Tag[]>(
+      "PUT",
+      `/features/${params.feature_id}/tags`,
+      { tag_ids: params.tag_ids }
     );
   }
 

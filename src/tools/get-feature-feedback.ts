@@ -13,6 +13,13 @@ export const inputSchema = z.object({
     .string()
     .min(1)
     .describe("The unique ID of the feature request (e.g. 'feat_01j8k...')"),
+  include_internal: z
+    .boolean()
+    .default(false)
+    .describe(
+      "When true, internal admin-only comments are included in the output. " +
+      "Defaults to false (public comments only)."
+    ),
 });
 
 export type Input = z.infer<typeof inputSchema>;
@@ -20,6 +27,7 @@ export type Input = z.infer<typeof inputSchema>;
 export async function execute(input: Input, client: FeaturiqClient): Promise<string> {
   const { feature, comments } = await client.getFeatureFeedback({
     feature_id: input.feature_id,
+    include_internal: input.include_internal,
   });
 
   const revenueStr =
@@ -27,20 +35,29 @@ export async function execute(input: Input, client: FeaturiqClient): Promise<str
       ? `$${feature.revenue_impact.toLocaleString()} revenue impact`
       : "revenue impact not tracked";
 
+  const tagsStr =
+    feature.tags && feature.tags.length > 0
+      ? `\nTags: ${feature.tags.map(t => t.name).join(", ")}`
+      : "";
+
   let output =
     `Feature: ${feature.title} [${feature.id}]\n` +
-    `Status: ${feature.status} | Votes: ${feature.vote_count} | ${revenueStr}\n` +
+    `Status: ${feature.status} | Votes: ${feature.vote_count} | ${revenueStr}${tagsStr}\n` +
     `URL: ${feature.url}\n\n` +
     `Description:\n${feature.description}\n`;
 
-  if (comments.length === 0) {
+  // AI-generated follow-up questions are already filtered server-side;
+  // any remaining is_ai_question:true entries are shown with a clear label.
+  const userComments = comments.filter(c => !c.is_ai_question);
+
+  if (userComments.length === 0) {
     output += "\nNo comments yet.";
     return output;
   }
 
-  output += `\n--- ${comments.length} Comment(s) ---\n`;
+  output += `\n--- ${userComments.length} Comment(s) ---\n`;
 
-  for (const c of comments) {
+  for (const c of userComments) {
     const label = c.is_internal ? " [internal]" : "";
     output +=
       `\n[${c.id}]${label} ${c.author.name} (${c.author.email}) — ${c.created_at}\n` +

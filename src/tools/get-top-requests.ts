@@ -40,9 +40,11 @@ export async function execute(input: Input, client: FeaturiqClient): Promise<str
   const lines = features.map((f, i) => {
     const revenue =
       f.revenue_impact !== null ? ` | Revenue impact: $${f.revenue_impact.toLocaleString()}` : "";
+    const tags =
+      f.tags && f.tags.length > 0 ? `\n   Tags: ${f.tags.map(t => t.name).join(", ")}` : "";
     return (
       `${i + 1}. [${f.id}] ${f.title}\n` +
-      `   Status: ${f.status} | Votes: ${f.vote_count}${revenue}\n` +
+      `   Status: ${f.status} | Votes: ${f.vote_count}${revenue}${tags}\n` +
       `   ${f.url}`
     );
   });
