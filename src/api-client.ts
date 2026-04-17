@@ -183,7 +183,7 @@ export class FeaturiqClient {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private async request<T>(
-    method: "GET" | "POST" | "PATCH" | "DELETE",
+    method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE",
     path: string,
     body?: unknown
   ): Promise<T> {
