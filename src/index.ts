@@ -37,6 +37,31 @@ app.get("/health", (_req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// Smithery server-card — lets Smithery discover tools without live scanning.
+// Spec: https://smithery.ai/docs/build/publish#troubleshooting
+// ---------------------------------------------------------------------------
+
+app.get("/.well-known/mcp/server-card.json", (_req, res) => {
+  res.json({
+    name: "featuriq-mcp",
+    version: "0.1.0",
+    description:
+      "Connect your AI to real user feedback. Query feature requests, search customer feedback, prioritize your backlog, update roadmap status, and notify voters — from Claude, Cursor, or any MCP-compatible client.",
+    endpoint: `${process.env.MCP_PUBLIC_URL ?? "https://mcp.featuriq.io"}/mcp`,
+    tools: [
+      { name: "get_top_requests",       description: "Returns the top feature requests sorted by vote count or revenue impact." },
+      { name: "search_feedback",        description: "Semantically searches all feedback posts using natural language." },
+      { name: "get_feature_feedback",   description: "Returns all comments and discussion for a specific feature request." },
+      { name: "get_prioritization",     description: "Returns an AI-prioritized list of features scored by selected factors." },
+      { name: "update_feature_status",  description: "Updates the status of a feature request." },
+      { name: "notify_requesters",      description: "Sends a personalized notification to every user who voted for a feature." },
+      { name: "create_post",            description: "Creates a new feedback post on a Featuriq board." },
+      { name: "manage_feature_tags",    description: "Lists workspace tags or assigns tags to a feature request." },
+    ],
+  });
+});
+
+// ---------------------------------------------------------------------------
 // OAuth authorization server metadata
 //
 // MCP clients (Claude, Cursor, etc.) fetch this endpoint to discover where to
