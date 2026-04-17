@@ -21,7 +21,7 @@ import { validateBearerToken, AuthError } from "./auth.js";
 import { createMcpServer } from "./register.js";
 
 const PORT = parseInt(process.env.PORT ?? "3000", 10);
-const FEATURIQ_API_URL = process.env.FEATURIQ_API_URL ?? "https://api.featuriq.io/v1";
+const FEATURIQ_API_URL = process.env.FEATURIQ_API_URL ?? "https://featuriq.io/v1";
 const FEATURIQ_APP_URL = process.env.FEATURIQ_APP_URL ?? "https://featuriq.io";
 
 const app = express();
