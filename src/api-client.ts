@@ -25,7 +25,7 @@ export function getConfig(): FeaturiqClientConfig {
   }
   return {
     apiKey,
-    baseUrl: process.env.FEATURIQ_API_URL ?? "https://api.featuriq.io/v1",
+    baseUrl: process.env.FEATURIQ_API_URL ?? "https://featuriq.io/v1",
   };
 }
 
