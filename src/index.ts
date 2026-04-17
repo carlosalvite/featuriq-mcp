@@ -27,6 +27,20 @@ const FEATURIQ_APP_URL = process.env.FEATURIQ_APP_URL ?? "https://featuriq.io";
 const app = express();
 app.use(express.json());
 
+// CORS for all discovery endpoints — Smithery and other MCP clients fetch
+// these cross-origin (from their browser or server-side workers).
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Mcp-Session-Id");
+  res.setHeader("Access-Control-Expose-Headers", "WWW-Authenticate");
+  if (req.method === "OPTIONS") {
+    res.status(204).end();
+    return;
+  }
+  next();
+});
+
 // ---------------------------------------------------------------------------
 // Health check
 // Railway uses this to confirm the service is up.
