@@ -84,6 +84,18 @@ app.get("/.well-known/oauth-authorization-server", (_req, res) => {
   });
 });
 
+// RFC 9728 — OAuth 2.0 Protected Resource Metadata
+// MCP clients discover the authorization server via this endpoint first.
+app.get("/.well-known/oauth-protected-resource", (_req, res) => {
+  const MCP_PUBLIC_URL = process.env.MCP_PUBLIC_URL ?? "https://mcp.featuriq.io";
+  res.json({
+    resource: MCP_PUBLIC_URL,
+    authorization_servers: [FEATURIQ_APP_URL],
+    bearer_methods_supported: ["header"],
+    scopes_supported: ["read", "write"],
+  });
+});
+
 // ---------------------------------------------------------------------------
 // MCP endpoint — POST /mcp  AND  POST /
 //
@@ -116,7 +128,14 @@ async function handleMcpRequest(req: any, res: any) {
     await transport.handleRequest(req, res, req.body);
   } catch (err) {
     if (err instanceof AuthError) {
-      res.status(err.statusCode).json({ error: err.message });
+      const MCP_PUBLIC_URL = process.env.MCP_PUBLIC_URL ?? "https://mcp.featuriq.io";
+      res
+        .status(err.statusCode)
+        .set(
+          "WWW-Authenticate",
+          `Bearer realm="Featuriq MCP", resource_metadata="${MCP_PUBLIC_URL}/.well-known/oauth-protected-resource"`
+        )
+        .json({ error: err.message });
       return;
     }
     const message = err instanceof Error ? err.message : String(err);
