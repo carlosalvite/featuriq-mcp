@@ -85,7 +85,10 @@ app.get("/.well-known/oauth-authorization-server", (_req, res) => {
 });
 
 // ---------------------------------------------------------------------------
-// MCP endpoint — POST /mcp
+// MCP endpoint — POST /mcp  AND  POST /
+//
+// Smithery (and some other clients) POST to the root URL of the server.
+// We handle both paths so either URL works.
 //
 // Each request:
 //   1. Validates the Bearer token (Featuriq OAuth access token or API key)
@@ -95,7 +98,7 @@ app.get("/.well-known/oauth-authorization-server", (_req, res) => {
 //   5. Tears down — fully stateless
 // ---------------------------------------------------------------------------
 
-app.post("/mcp", async (req, res) => {
+async function handleMcpRequest(req: any, res: any) {
   try {
     const { token } = await validateBearerToken(
       req.headers.authorization,
@@ -122,7 +125,10 @@ app.post("/mcp", async (req, res) => {
       res.status(500).json({ error: "Internal server error" });
     }
   }
-});
+}
+
+app.post("/mcp", handleMcpRequest);
+app.post("/", handleMcpRequest);
 
 // Stateful GET/DELETE (SSE sessions) — not supported in stateless mode
 app.all("/mcp", (_req, res) => {
