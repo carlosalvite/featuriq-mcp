@@ -4,15 +4,15 @@
  * Supports two token types:
  *
  *   1. OAuth JWT (issued by Featuriq's OAuth server)
- *      Verified locally using FEATURIQ_JWT_SECRET — no network call needed.
- *      This avoids the "fetch failed" error when Railway can't reach featuriq.io.
+ *      Verified locally using FEATURIQ_JWT_SECRET when set.
+ *      Falls back to GET /v1/me if local verification fails or secret is missing.
  *
  *   2. API key (starts with "featuriq_")
  *      Validated by calling GET /v1/me on the Featuriq API.
  *
  * Env vars:
- *   FEATURIQ_JWT_SECRET — must match the JWT_SECRET in the Feed-Flow deployment.
- *                         Required for OAuth token validation without a network call.
+ *   FEATURIQ_JWT_SECRET — optional. When set and matching Feed-Flow's JWT_SECRET,
+ *                         enables offline JWT validation (faster, no network call).
  */
 export interface TokenInfo {
     token: string;

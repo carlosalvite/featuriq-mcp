@@ -4,22 +4,21 @@
  * Supports two token types:
  *
  *   1. OAuth JWT (issued by Featuriq's OAuth server)
- *      Verified locally using FEATURIQ_JWT_SECRET — no network call needed.
- *      This avoids the "fetch failed" error when Railway can't reach featuriq.io.
+ *      Verified locally using FEATURIQ_JWT_SECRET when set.
+ *      Falls back to GET /v1/me if local verification fails or secret is missing.
  *
  *   2. API key (starts with "featuriq_")
  *      Validated by calling GET /v1/me on the Featuriq API.
  *
  * Env vars:
- *   FEATURIQ_JWT_SECRET — must match the JWT_SECRET in the Feed-Flow deployment.
- *                         Required for OAuth token validation without a network call.
+ *   FEATURIQ_JWT_SECRET — optional. When set and matching Feed-Flow's JWT_SECRET,
+ *                         enables offline JWT validation (faster, no network call).
  */
 
 import jwt from "jsonwebtoken";
 
 const BEARER_PREFIX = "Bearer ";
 
-// Set FEATURIQ_JWT_SECRET to the same value as JWT_SECRET in your Feed-Flow deployment.
 const JWT_SECRET = process.env.FEATURIQ_JWT_SECRET;
 
 export interface TokenInfo {
@@ -60,30 +59,29 @@ export async function validateBearerToken(
     throw new AuthError(401, "Empty Bearer token.");
   }
 
-  // ── OAuth JWT path: validate locally, no network needed ──────────────────
+  // ── OAuth JWT path ────────────────────────────────────────────────────────
   if (!token.startsWith("featuriq_")) {
-    const decoded = jwt.decode(token, { complete: true });
-    process.stderr.write(`[featuriq-mcp] auth: JWT received, header=${JSON.stringify(decoded?.header)}, payload=${JSON.stringify(decoded?.payload)}\n`);
+    // Fast path: verify locally if FEATURIQ_JWT_SECRET is configured and matches.
     if (JWT_SECRET) {
       try {
         const payload = jwt.verify(token, JWT_SECRET) as {
           workspaceId?: string;
           type?: string;
         };
-        process.stderr.write(`[featuriq-mcp] auth: JWT verified OK, type=${payload.type} workspace=${payload.workspaceId}\n`);
         if (payload.type !== "oauth" || !payload.workspaceId) {
           throw new AuthError(401, "Invalid token: not a Featuriq OAuth token.");
         }
+        process.stderr.write(`[featuriq-mcp] auth: JWT verified locally OK (workspace=${payload.workspaceId})\n`);
         return { token };
       } catch (err) {
         if (err instanceof AuthError) throw err;
         const reason = err instanceof Error ? err.message : String(err);
-        process.stderr.write(`[featuriq-mcp] auth: JWT verify failed: ${reason}\n`);
-        throw new AuthError(401, "Invalid or expired OAuth token.");
+        process.stderr.write(`[featuriq-mcp] auth: local JWT verify failed (${reason}), falling back to API\n`);
+        // Fall through to API validation — /v1/me accepts OAuth JWTs too.
       }
     }
 
-    // No JWT_SECRET configured — fall back to API call
+    // Slow path: validate via API (handles secret mismatch and missing FEATURIQ_JWT_SECRET).
     return validateViaApi(token, featuriqBaseUrl);
   }
 
