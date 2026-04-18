@@ -2,7 +2,13 @@
   "name": "featuriq-mcp",
   "version": "0.1.0",
   "description": "MCP server for Featuriq — query and manage product feedback and roadmaps from any AI client",
-  "keywords": ["mcp", "featuriq", "product-feedback", "roadmap", "model-context-protocol"],
+  "keywords": [
+    "mcp",
+    "featuriq",
+    "product-feedback",
+    "roadmap",
+    "model-context-protocol"
+  ],
   "homepage": "https://featuriq.io",
   "license": "MIT",
   "type": "module",
@@ -21,7 +27,9 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.10.2",
+    "@types/jsonwebtoken": "^9.0.10",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.3",
     "zod": "^3.23.8"
   },
   "devDependencies": {
