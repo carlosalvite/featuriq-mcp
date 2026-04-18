@@ -43,9 +43,11 @@ export async function validateBearerToken(authorizationHeader, featuriqBaseUrl) 
     }
     // ── OAuth JWT path: validate locally, no network needed ──────────────────
     if (!token.startsWith("featuriq_")) {
+        process.stderr.write(`[featuriq-mcp] auth: JWT token received, JWT_SECRET set=${!!JWT_SECRET}\n`);
         if (JWT_SECRET) {
             try {
                 const payload = jwt.verify(token, JWT_SECRET);
+                process.stderr.write(`[featuriq-mcp] auth: JWT verified OK, type=${payload.type} workspace=${payload.workspaceId}\n`);
                 if (payload.type !== "oauth" || !payload.workspaceId) {
                     throw new AuthError(401, "Invalid token: not a Featuriq OAuth token.");
                 }
