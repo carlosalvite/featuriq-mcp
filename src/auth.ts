@@ -62,7 +62,8 @@ export async function validateBearerToken(
 
   // ── OAuth JWT path: validate locally, no network needed ──────────────────
   if (!token.startsWith("featuriq_")) {
-    process.stderr.write(`[featuriq-mcp] auth: JWT token received, JWT_SECRET set=${!!JWT_SECRET}\n`);
+    const decoded = jwt.decode(token, { complete: true });
+    process.stderr.write(`[featuriq-mcp] auth: JWT received, header=${JSON.stringify(decoded?.header)}, payload=${JSON.stringify(decoded?.payload)}\n`);
     if (JWT_SECRET) {
       try {
         const payload = jwt.verify(token, JWT_SECRET) as {
