@@ -1,0 +1,10 @@
+# Smithery MCP server configuration
+# https://smithery.ai/docs/build/publish
+
+startCommand:
+  type: http
+  configSchema:
+    type: object
+    properties: {}
+    required: []
+  exampleConfig: {}
