@@ -56,6 +56,8 @@ export async function validateBearerToken(authorizationHeader, featuriqBaseUrl) 
             catch (err) {
                 if (err instanceof AuthError)
                     throw err;
+                const reason = err instanceof Error ? err.message : String(err);
+                process.stderr.write(`[featuriq-mcp] auth: JWT verify failed: ${reason}\n`);
                 throw new AuthError(401, "Invalid or expired OAuth token.");
             }
         }
