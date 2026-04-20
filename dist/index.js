@@ -17,6 +17,7 @@
  *                          when Railway can't reach featuriq.io via fetch.
  */
 import express from "express";
+import { createHash } from "crypto";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { FeaturiqClient } from "./api-client.js";
 import { validateBearerToken, AuthError } from "./auth.js";
@@ -157,8 +158,13 @@ app.all("/mcp", (_req, res) => {
 // Start
 // ---------------------------------------------------------------------------
 app.listen(PORT, () => {
+    const jwtSecret = process.env.FEATURIQ_JWT_SECRET;
+    const secretFp = jwtSecret
+        ? createHash("sha256").update(jwtSecret).digest("hex").slice(0, 16)
+        : "NOT_SET";
     process.stderr.write(`[featuriq-mcp] listening on port ${PORT}\n` +
         `[featuriq-mcp] MCP endpoint → http://localhost:${PORT}/mcp\n` +
-        `[featuriq-mcp] OAuth metadata → http://localhost:${PORT}/.well-known/oauth-authorization-server\n`);
+        `[featuriq-mcp] OAuth metadata → http://localhost:${PORT}/.well-known/oauth-authorization-server\n` +
+        `[featuriq-mcp] FEATURIQ_JWT_SECRET fingerprint: ${secretFp}\n`);
 });
 //# sourceMappingURL=index.js.map
