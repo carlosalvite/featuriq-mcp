@@ -40,7 +40,7 @@ Or copy `.env.example` to `.env` and fill in your key if your client supports `.
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `FEATURIQ_API_KEY` | Yes | — | Your Featuriq API key |
-| `FEATURIQ_API_URL` | No | `https://api.featuriq.io/v1` | Override the API base URL |
+| `FEATURIQ_API_URL` | No | `https://featuriq.io/v1` | Override the API base URL |
 
 ### 3. Add to your MCP client
 
@@ -219,7 +219,7 @@ The last 20 shipped features with ship dates and release notes.
 ## Development
 
 ```bash
-git clone https://github.com/featuriq/featuriq-mcp
+git clone https://github.com/carlosalvite/featuriq-mcp
 cd featuriq-mcp
 npm install
 npm run build
